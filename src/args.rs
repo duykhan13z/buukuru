@@ -3,8 +3,20 @@ use url::Url;
 use crate::epub::gen_epub;
 use crate::model::NovelSource;
 use crate::sources::kakuyomu::Kakuyomu;
+use crate::sources::syosetu::Syosetu;
 use std::env;
 use std::error::Error;
+
+static HELP_MSG: &str = r##"Buukuru
+Downloading Japanese web novels as .epub files.
+
+Usage:
+    buukuru get <url>
+    buukuru get https://ncode.syosetu.com/n6755gk/
+Options:
+    -h --help       Show this screen.
+    -v --version    Show version.
+    get             Download the webnovel as an .epub file"##;
 
 pub struct Config {
     pub command: String,
@@ -40,9 +52,12 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     match config.command.as_str() {
         "get" => {
             gen_epub(novel_source, novel_metadata)?;
-        }
+        },
+        "help" => {
+            println!("{}", HELP_MSG);
+        },
         _ => {
-            println!("Bạn đang nhập sai lệnh thì phải, gõ `buukuru help` để đọc hướng dẫn");
+            println!("{}", HELP_MSG)
         }
     }
 
@@ -53,7 +68,10 @@ pub fn match_url(url: &str) -> Result<NovelSource, Box<dyn Error>> {
     match Url::parse(url)?.host_str().unwrap() {
         "kakuyomu.jp" => {
             Ok(Kakuyomu::gen_info())
-        }
+        },
+        "ncode.syosetu.com" | "syosetu.com" => {
+            Ok(Syosetu::gen_info())
+        },
         _ => {
             Err("No way to be found".into())
         }

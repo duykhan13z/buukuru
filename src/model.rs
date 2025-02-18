@@ -4,6 +4,7 @@ use scraper::{Html, Selector};
 
 use crate::utils;
 
+
 // Save selector
 pub struct NovelSource {
     base_url: String,
@@ -56,7 +57,7 @@ impl NovelSource {
     pub fn fetch_metadata(&self, novel_url: &str) -> Result<NovelMetadata, Box<dyn Error>> {
         let body = utils::fetch_from_internet(&novel_url)?.body_mut().read_to_string()?;
         let document = Html::parse_document(&body);
-
+        
         let title_selector = Selector::parse(&self.novel_name).unwrap();
         let author_selector = Selector::parse(&self.novel_author).unwrap();
         let first_chap_selector = Selector::parse(&self.first_chapter).unwrap();
@@ -76,6 +77,7 @@ impl NovelSource {
     pub fn download_current_chapter(&self, current_url: &str) -> Result<Chapter, Box<dyn Error>> {
         let body = utils::fetch_from_internet(&current_url)?.body_mut().read_to_string()?;
         let document = Html::parse_document(&body);
+        // println!("{}", body);
         let mut chap_lines: Vec<String> = Vec::new();  
         let mut next_chapter_url = String::from("");
         let mut any_chapter_left = true;
@@ -84,10 +86,8 @@ impl NovelSource {
         let content_selector = Selector::parse(&self.chap_content).unwrap();
         let next_chap_selector = Selector::parse(&self.next_chapter).unwrap();
         let each_line = Selector::parse("p").unwrap();  
-
         let chap_name: String = document.select(&title_selector).next().unwrap().text().collect();
-        println!("Downloading {}", &chap_name);
-
+        
         match document.select(&next_chap_selector).next() {
             Some(chapter_url) => {
                 next_chapter_url = chapter_url.value().attr("href").unwrap().to_string();
