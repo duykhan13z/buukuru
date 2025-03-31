@@ -12,7 +12,8 @@ impl Syosetu {
             // novel_author
             String::from(".p-novel__author > a:nth-child(1)"), 
             String::from("ja"), 
-            String::from("div.p-eplist__sublist:nth-child(1) > a:nth-child(1)"), 
+            // div.p-eplist__sublist:nth-child(2) > a:nth-child(1)
+            String::from("div.p-eplist__sublist > a:nth-child(1)"), 
             String::from(".p-novel__title"), 
             String::from(".js-novel-text"), 
             String::from("a.c-pager__item--next") 
